@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Город.ТГ</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
@@ -11,7 +11,7 @@
       padding: 0;
       font-family: Arial, sans-serif;
       background: #0f0f0f;
-      color: #fff;
+      color: #ffffff;
     }
     .header {
       padding: 16px;
@@ -20,9 +20,9 @@
     }
     .content {
       padding: 16px;
-      opacity: 0.8;
+      opacity: 0.85;
     }
-    .roll-btn {
+    .btn {
       position: fixed;
       bottom: 20px;
       left: 20px;
@@ -40,16 +40,21 @@
 <body>
 
   <div class="header">🏙 Город.ТГ</div>
-  <div class="content">Mini App подключён</div>
+  <div class="content" id="status">Mini App подключён</div>
 
-  <button class="roll-btn" id="rollBtn">🎲 Кинуть фишки</button>
+  <button class="btn" id="rollBtn">🎲 Кинуть фишки</button>
 
   <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    document.getElementById("rollBtn").onclick = () => {
+    const status = document.getElementById("status");
+    const btn = document.getElementById("rollBtn");
+
+    btn.onclick = () => {
+      status.innerText = "Нажал. Отправляю в бота…";
       tg.sendData(JSON.stringify({ action: "roll" }));
+      tg.close();
     };
   </script>
 
