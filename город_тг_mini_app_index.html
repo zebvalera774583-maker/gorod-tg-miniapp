@@ -6,7 +6,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body {
+        body<button id="rollBtn" style="
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  height: 56px;
+  font-size: 18px;
+">
+🎲 Кинуть фишки
+</button>
+
+<div id="status" style="margin:20px;"></div>
+
+<script>
+  const tg = window.Telegram.WebApp;
+  tg.expand();
+
+  const statusEl = document.getElementById("status");
+  statusEl.innerText = "Mini App подключён. Нажми кнопку.";
+
+  document.getElementById("rollBtn").addEventListener("click", () => {
+    const payload = { action: "roll" };
+    tg.sendData(JSON.stringify(payload));
+    statusEl.innerText = "Отправлено в бота: " + JSON.stringify(payload);
+  });
+</script> {
             margin: 0;
             padding: 20px;
             background: #0f0f0f;
