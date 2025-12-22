@@ -89,8 +89,9 @@ const config = {
 const WORLD_WIDTH = 4000;
 const WORLD_HEIGHT = 3000;
 
-// ВЕРСИЯ 2: Дом в центре, одна дорога, кафе убраны
-console.log("Game.js версия 2 загружена!");
+// ВЕРСИЯ 2.2: Дом в центре, одна дорога, кафе убраны
+console.log("=== ====== Game.js ВЕРСИЯ 2.2 ЗАГРУЖЕНА! ====== ===");
+console.log("Дом должен быть в центре: X=" + (4000/2) + ", Y=" + (3000/2));
 
 // Глобальные переменные игры
 let game;
@@ -538,8 +539,19 @@ function create() {
     // Создание локаций по схеме
     createAllLocations(scene);
     
-    // Создание игрока (начинает в ДОМЕ - левый верхний угол)
+    // Создание игрока (начинает в ДОМЕ - центр экрана)
     createPlayer(scene);
+    
+    // ВЕРСИЯ 2.2: Дом в центре, одна дорога, кафе убраны
+    const versionText = scene.add.text(10, 10, 'ВЕРСИЯ 2.2', {
+        fontSize: '32px',
+        color: '#00ff00',
+        fontStyle: 'bold',
+        backgroundColor: '#000000',
+        padding: { x: 10, y: 5 }
+    });
+    versionText.setDepth(1000);
+    console.log("Визуальный индикатор ВЕРСИЯ 2.2 создан на экране");
     
     // Первоначальное обновление видимых локаций
     updateVisibleLocations(scene);

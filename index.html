@@ -65,9 +65,18 @@
     </div>
 
     <script>
-        // Принудительный обход кэша
+        // Принудительный обход кэша - версия 2.1
+        const timestamp = new Date().getTime();
+        const random = Math.floor(Math.random() * 1000000);
         const script = document.createElement('script');
-        script.src = 'game.js?v=' + new Date().getTime();
+        script.src = 'game.js?v=' + timestamp + '&r=' + random;
+        script.onerror = function() {
+            console.error('ОШИБКА: game.js не загружен!');
+            alert('ОШИБКА: файл game.js не загружен. Проверь URL.');
+        };
+        script.onload = function() {
+            console.log('game.js успешно загружен с параметрами: v=' + timestamp + ' r=' + random);
+        };
         document.body.appendChild(script);
     </script>
 </body>
