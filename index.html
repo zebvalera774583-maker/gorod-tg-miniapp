@@ -2,84 +2,27 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Город.ТГ - Игра</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Город.ТГ</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #000000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+    </style>
 </head>
 <body>
-    <div id="game-container">
-        <!-- Игра будет отрисована здесь -->
-    </div>
-    
-    <!-- UI элементы поверх игры -->
-    <div id="ui-overlay">
-        <!-- Кнопка меню (три стрелочки) -->
-        <button id="menu-button" class="menu-button">
-            ☰
-        </button>
-        
-        <!-- Меню с информацией -->
-        <div id="info-menu" class="info-menu">
-            <div class="menu-header">
-                <h2>Информация</h2>
-                <button id="close-menu" class="close-menu">✕</button>
-            </div>
-            <div class="menu-content">
-                <div class="info-item">
-                    <span class="info-label">💰 Баланс:</span>
-                    <span id="menu-balance" class="info-value">50 000 ₽</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">📅 День:</span>
-                    <span id="menu-day" class="info-value">1</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">👥 Онлайн:</span>
-                    <span id="menu-online" class="info-value">0</span>
-                </div>
-                <div class="info-section">
-                    <h3>Моя собственность</h3>
-                    <div id="property-list" class="property-list">
-                        <div class="property-item">Пока нет собственности</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Кнопка "Кинуть фишки" появляется только когда нужно -->
-        <div class="ui-bottom" id="dice-button-container" style="display: none;">
-            <button id="roll-dice-button" class="dice-button">
-                <span class="dice-icon">🎲</span>
-                <span class="dice-text">Кинуть фишки</span>
-            </button>
-        </div>
-        
-        <!-- Кнопка "Пошли" появляется после результатов -->
-        <div class="ui-bottom" id="go-button-container" style="display: none;">
-            <button id="go-button" class="dice-button">
-                <span class="dice-text">Пошли</span>
-            </button>
-        </div>
-    </div>
-
+    <div>Пустая страница - файлы загружаются</div>
     <script>
-        // Принудительный обход кэша - версия 2.1
-        const timestamp = new Date().getTime();
-        const random = Math.floor(Math.random() * 1000000);
-        const script = document.createElement('script');
-        script.src = 'game.js?v=' + timestamp + '&r=' + random;
-        script.onerror = function() {
-            console.error('ОШИБКА: game.js не загружен!');
-            alert('ОШИБКА: файл game.js не загружен. Проверь URL.');
-        };
-        script.onload = function() {
-            console.log('game.js успешно загружен с параметрами: v=' + timestamp + ' r=' + random);
-        };
-        document.body.appendChild(script);
+        console.log("=== INDEX.HTML ЗАГРУЖЕН ===");
     </script>
 </body>
 </html>
-
-
