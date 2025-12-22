@@ -69,8 +69,8 @@ function create() {
     scene.cameras.main.setZoom(1);
     
     // Координаты дома: центр по X, максимально наверху
-    const houseX = WORLD_WIDTH / 2;  // Центр по горизонтали
-    const houseY = 100;  // Максимально наверху
+    const houseX = WORLD_WIDTH / 2;  // Центр по горизонтали (2000)
+    const houseY = 150;  // Максимально наверху (увеличено для видимости)
     
     // Создаем дом
     houseSprite = scene.add.image(houseX, houseY, 'house');
@@ -148,11 +148,23 @@ function create() {
     });
     
     // Камера следует за игроком
+    scene.cameras.main.setZoom(0.8); // Уменьшаем зум для лучшей видимости
     scene.cameras.main.centerOn(houseX, houseY);
     scene.time.delayedCall(1100, () => {
         scene.cameras.main.startFollow(playerSprite, true, 0.1, 0.1);
         scene.cameras.main.setDeadzone(150, 150);
     });
+    
+    // Отладочный текст для проверки
+    const debugText = scene.add.text(houseX, houseY + 100, 'ДОМ ЗДЕСЬ', {
+        fontSize: '32px',
+        color: '#00ff00',
+        fontStyle: 'bold',
+        backgroundColor: '#000000',
+        padding: { x: 10, y: 5 }
+    });
+    debugText.setOrigin(0.5, 0);
+    debugText.setDepth(1000);
     
     // Меню
     setupMenu();
