@@ -577,132 +577,27 @@ function createCityMap(scene) {
         const roadColor = 0x5a5a5a; // Светлее
         const asphaltColor = 0x4a4a4a; // Мягче
         
-        // Горизонтальные магистрали (разделяют районы)
-        const hMainRoads = [
-            WORLD_HEIGHT * 0.25, // После кафе/магазинов
-            WORLD_HEIGHT * 0.5,  // После ресторанов/обменников
-            WORLD_HEIGHT * 0.75  // После спортзалов/прачечных
-        ];
+        // Одна горизонтальная дорога через центр экрана (где дом)
+        const roadY = WORLD_HEIGHT / 2; // Центр экрана
         
-        hMainRoads.forEach(y => {
-            // Асфальт
-            roads.fillStyle(asphaltColor, 1);
-            roads.fillRect(0, y - mainRoadWidth/2, WORLD_WIDTH, mainRoadWidth);
-            
-            // Мягкие бордюры
-            roads.fillStyle(0x6a6a6a, 0.7);
-            roads.fillRect(0, y - mainRoadWidth/2 - 4, WORLD_WIDTH, 4);
-            roads.fillRect(0, y + mainRoadWidth/2, WORLD_WIDTH, 4);
-            
-            // Простая разметка (мягче)
-            roads.fillStyle(0xffeb3b, 0.6);
-            roads.fillRect(0, y - 2, WORLD_WIDTH, 4);
-            
-            // Прерывистая разметка (более мягкая)
-            roads.fillStyle(0xffffff, 0.5);
-            for (let x = 0; x < WORLD_WIDTH; x += 90) {
-                roads.fillRect(x, y - 1, 55, 2);
-            }
-        });
+        // Асфальт
+        roads.fillStyle(asphaltColor, 1);
+        roads.fillRect(0, roadY - mainRoadWidth/2, WORLD_WIDTH, mainRoadWidth);
         
-        // Вертикальные магистрали
-        const vMainRoads = [
-            WORLD_WIDTH * 0.2 + 20,  // После ДОМА (сдвинута на 20px правее)
-            WORLD_WIDTH * 0.45, // Разделитель районов
-            WORLD_WIDTH * 0.7,  // Разделитель районов
-            WORLD_WIDTH * 0.9   // Перед конечными точками
-        ];
+        // Мягкие бордюры
+        roads.fillStyle(0x6a6a6a, 0.7);
+        roads.fillRect(0, roadY - mainRoadWidth/2 - 4, WORLD_WIDTH, 4);
+        roads.fillRect(0, roadY + mainRoadWidth/2, WORLD_WIDTH, 4);
         
-        vMainRoads.forEach(x => {
-            roads.fillStyle(asphaltColor, 1);
-            roads.fillRect(x - mainRoadWidth/2, 0, mainRoadWidth, WORLD_HEIGHT);
-            
-            // Мягкие бордюры
-            roads.fillStyle(0x6a6a6a, 0.7);
-            roads.fillRect(x - mainRoadWidth/2 - 4, 0, 4, WORLD_HEIGHT);
-            roads.fillRect(x + mainRoadWidth/2, 0, 4, WORLD_HEIGHT);
-            
-            // Простая разметка
-            roads.fillStyle(0xffeb3b, 0.6);
-            roads.fillRect(x - 2, 0, 4, WORLD_HEIGHT);
-            
-            // Прерывистая разметка (более мягкая)
-            roads.fillStyle(0xffffff, 0.5);
-            for (let y = 0; y < WORLD_HEIGHT; y += 90) {
-                roads.fillRect(x - 1, y, 2, 55);
-            }
-        });
+        // Простая разметка (мягче)
+        roads.fillStyle(0xffeb3b, 0.6);
+        roads.fillRect(0, roadY - 2, WORLD_WIDTH, 4);
         
-        // Второстепенные дороги (внутри районов)
-        const sideRoads = scene.add.graphics();
-        for (let y = 100; y < WORLD_HEIGHT; y += 200) {
-            if (!hMainRoads.some(mainY => Math.abs(y - mainY) < 100)) {
-                sideRoads.fillStyle(roadColor, 1);
-                sideRoads.fillRect(0, y - sideRoadWidth/2, WORLD_WIDTH, sideRoadWidth);
-                
-                // Простая разметка
-                sideRoads.fillStyle(0xffffff, 0.6);
-                for (let x = 0; x < WORLD_WIDTH; x += 100) {
-                    sideRoads.fillRect(x, y - 1, 60, 2);
-                }
-            }
+        // Прерывистая разметка (более мягкая)
+        roads.fillStyle(0xffffff, 0.5);
+        for (let x = 0; x < WORLD_WIDTH; x += 90) {
+            roads.fillRect(x, roadY - 1, 55, 2);
         }
-        
-        for (let x = 100; x < WORLD_WIDTH; x += 250) {
-            if (!vMainRoads.some(mainX => Math.abs(x - mainX) < 100)) {
-                sideRoads.fillStyle(roadColor, 1);
-                sideRoads.fillRect(x - sideRoadWidth/2, 0, sideRoadWidth, WORLD_HEIGHT);
-                
-                sideRoads.fillStyle(0xffffff, 0.6);
-                for (let y = 0; y < WORLD_HEIGHT; y += 100) {
-                    sideRoads.fillRect(x - 1, y, 2, 60);
-                }
-            }
-        }
-        
-        // Тротуары убраны (чтобы не было светлых квадратиков)
-        
-        // Мягкие деревья (проще, как в Labrador Adventures)
-        const decorations = scene.add.graphics();
-        for (let i = 0; i < 150; i++) {
-            const x = Phaser.Math.Between(50, WORLD_WIDTH - 50);
-            const y = Phaser.Math.Between(WORLD_HEIGHT * 0.7, WORLD_HEIGHT - 50);
-            
-            // Проверяем, что не на дороге
-            let onRoad = false;
-            hMainRoads.forEach(ry => {
-                if (Math.abs(y - ry) < mainRoadWidth/2 + 50) onRoad = true;
-            });
-            vMainRoads.forEach(rx => {
-                if (Math.abs(x - rx) < mainRoadWidth/2 + 50) onRoad = true;
-            });
-            
-            if (!onRoad) {
-                // Простой ствол (мягкий коричневый)
-                decorations.fillStyle(0xa67c52, 1);
-                decorations.fillRoundedRect(x - 3, y, 6, 16, 2);
-                
-                // Простая круглая крона (приглушенный зеленый)
-                decorations.fillStyle(0x6b8e6b, 1);
-                decorations.fillCircle(x, y - 6, 12);
-            }
-        }
-        
-        // Фонари на основных дорогах
-        const lamps = scene.add.graphics();
-        hMainRoads.forEach(y => {
-            for (let x = 100; x < WORLD_WIDTH; x += 200) {
-                // Столб
-                lamps.fillStyle(0x696969, 1);
-                lamps.fillRect(x - 3, y - mainRoadWidth/2 - 50, 6, 50);
-                
-                // Фонарь
-                lamps.fillStyle(0xffd700, 0.9);
-                lamps.fillCircle(x, y - mainRoadWidth/2 - 50, 8);
-                lamps.fillStyle(0xffff99, 0.6);
-                lamps.fillCircle(x, y - mainRoadWidth/2 - 50, 12);
-            }
-        });
         
     } catch (error) {
         console.error('Ошибка создания карты:', error);
@@ -714,231 +609,13 @@ function createAllLocations(scene) {
     // Не создаем дом как Location, так как он уже создан как спрайт
     // homeLocation будет null, дом управляется отдельно
     
-    // Параметры для размещения локаций (создание локаций возобновлено)
-    
-    // Параметры для размещения локаций
-    const startX = 600; // Начало после ДОМА
-    const startY = 150; // Верхняя граница
-    const rowSpacing = 180; // Расстояние между рядами
-    const colSpacing = 140; // Расстояние между локациями в ряду
-    const locationsPerRow = 6;
-    
-    // Четыре кафе в квадрате после дома (два слева от дороги, два справа)
-    // Кафе 1: (170, 170)
-    // Кафе 2: (170, 230)
-    // Кафе 3: (280, 170)
-    // Кафе 4: (280, 230)
-    
-    // Кафе слева (смотрят на правую дорогу)
-    const earlyCafeX1 = 170;
-    const earlyCafeY1 = 170;
-    const earlyCafeX2 = 170;
-    const earlyCafeY2 = 230;
-    
-    // Кафе справа (смотрят на левую дорогу)
-    const earlyCafeX3 = 280;
-    const earlyCafeY3 = 170;
-    const earlyCafeX4 = 280;
-    const earlyCafeY4 = 230;
-    
-    // Дополнительные кафе
-    const earlyCafeX5 = 40;
-    const earlyCafeY5 = 170;
-    const earlyCafeX6 = 350;
-    const earlyCafeY6 = 170;
-    
-    const earlyCafeColors = [0xff6b6b, 0xff8a80, 0xff5252, 0xff6b6b, 0xff6b6b, 0xff8a80];
-    const location1 = new Location(scene, earlyCafeX1, earlyCafeY1, 'cafe', 'Кафе 1', earlyCafeColors[0]);
-    const location2 = new Location(scene, earlyCafeX2, earlyCafeY2, 'cafe', 'Кафе 2', earlyCafeColors[1]);
-    const location3 = new Location(scene, earlyCafeX3, earlyCafeY3, 'cafe', 'Кафе 3', earlyCafeColors[2]);
-    const location4 = new Location(scene, earlyCafeX4, earlyCafeY4, 'cafe', 'Кафе 4', earlyCafeColors[3]);
-    const location5 = new Location(scene, earlyCafeX5, earlyCafeY5, 'cafe', 'Кафе 5', earlyCafeColors[4]);
-    const location6 = new Location(scene, earlyCafeX6, earlyCafeY6, 'cafe', 'Кафе 6', earlyCafeColors[5]);
-    locations.push(location1);
-    locations.push(location2);
-    locations.push(location3);
-    locations.push(location4);
-    locations.push(location5);
-    locations.push(location6);
-    
-    // Район 1: Остальные кафе (3 ряда)
-    const cafeRows = 3;
-    const cafeColors = [0xff6b6b, 0xff8a80, 0xff5252];
-    for (let row = 0; row < cafeRows; row++) {
-        for (let col = 0; col < locationsPerRow; col++) {
-            const x = startX + col * colSpacing;
-            const y = startY + row * rowSpacing;
-            const cafeNum = row * locationsPerRow + col + 7; // Начинаем с 7, так как первые 6 уже есть
-            const location = new Location(scene, x, y, 'cafe', `Кафе ${cafeNum}`, cafeColors[row % cafeColors.length]);
-            locations.push(location);
-        }
-    }
-    
-    // Район 2: Магазины (4 ряда)
-    const shopStartY = startY + cafeRows * rowSpacing + 100;
-    const shopColors = [0x4ecdc4, 0x26a69a, 0x00897b, 0x00695c];
-    for (let row = 0; row < 4; row++) {
-        for (let col = 0; col < locationsPerRow; col++) {
-            const x = startX + col * colSpacing;
-            const y = shopStartY + row * rowSpacing;
-            const shopNum = row * locationsPerRow + col + 1;
-            const location = new Location(scene, x, y, 'shop', `Магазин ${shopNum}`, shopColors[row % shopColors.length]);
-            locations.push(location);
-        }
-    }
-    
-    // Биржа (4 локации справа от кафе/магазинов)
-    const birzhaX = WORLD_WIDTH * 0.85;
-    const birzhaStartY = startY + 100;
-    const birzhaColors = [0xffa726, 0xff9800, 0xfb8c00, 0xf57c00];
-    for (let i = 0; i < 4; i++) {
-        const location = new Location(scene, birzhaX, birzhaStartY + i * 250, 'exchange', `Биржа ${i + 1}`, birzhaColors[i]);
-        locations.push(location);
-    }
-    
-    // ЖК (4 локации слева от магазинов)
-    const zhkX = 300;
-    const zhkStartY = shopStartY;
-    const zhkColors = [0x81c784, 0x66bb6a, 0x4caf50, 0x43a047];
-    for (let i = 0; i < 4; i++) {
-        const location = new Location(scene, zhkX, zhkStartY + i * 200, 'home', `ЖК ${i + 1}`, zhkColors[i]);
-        locations.push(location);
-    }
-    
-    // Район 3: Рестораны (4 ряда)
-    const restStartY = WORLD_HEIGHT * 0.35;
-    const restStartX = startX;
-    const restColors = [0xffa07a, 0xff8c69, 0xff7f50, 0xff6347];
-    for (let row = 0; row < 4; row++) {
-        for (let col = 0; col < locationsPerRow; col++) {
-            const x = restStartX + col * colSpacing;
-            const y = restStartY + row * rowSpacing;
-            const restNum = row * locationsPerRow + col + 1;
-            const location = new Location(scene, x, y, 'restaurant', `Ресторан ${restNum}`, restColors[row % restColors.length]);
-            locations.push(location);
-        }
-    }
-    
-    // Район 4: Обменники (4 ряда, рядом с ресторанами)
-    const exchStartY = restStartY;
-    const exchStartX = restStartX + locationsPerRow * colSpacing + 100;
-    const exchColors = [0xc44569, 0xbb3f6f, 0xb23768, 0xa92e5e];
-    for (let row = 0; row < 4; row++) {
-        for (let col = 0; col < locationsPerRow; col++) {
-            const x = exchStartX + col * colSpacing;
-            const y = exchStartY + row * rowSpacing;
-            const exchNum = row * locationsPerRow + col + 1;
-            const location = new Location(scene, x, y, 'exchange', `Обменник ${exchNum}`, exchColors[row % exchColors.length]);
-            locations.push(location);
-        }
-    }
-    
-    // Такси (4 локации справа от ресторанов/обменников)
-    const taxiX = WORLD_WIDTH * 0.85;
-    const taxiStartY = restStartY + 100;
-    const taxiColors = [0xffd700, 0xffc107, 0xffb300, 0xffa000];
-    for (let i = 0; i < 4; i++) {
-        const location = new Location(scene, taxiX, taxiStartY + i * 250, 'taxi', `Такси ${i + 1}`, taxiColors[i]);
-        locations.push(location);
-    }
-    
-    // Банк (4 локации слева от спортзалов)
-    const bankX = 300;
-    const bankStartY = WORLD_HEIGHT * 0.55;
-    const bankColors = [0xf7dc6f, 0xf4d03f, 0xf1c40f, 0xf39c12];
-    for (let i = 0; i < 4; i++) {
-        const location = new Location(scene, bankX, bankStartY + i * 200, 'bank', `Банк ${i + 1}`, bankColors[i]);
-        locations.push(location);
-    }
-    
-    // Район 5: Спортзалы (4 ряда)
-    const gymStartY = WORLD_HEIGHT * 0.55;
-    const gymStartX = startX;
-    const gymColors = [0xff6b9d, 0xff5c8a, 0xff4c7a, 0xff3d6b];
-    for (let row = 0; row < 4; row++) {
-        for (let col = 0; col < locationsPerRow; col++) {
-            const x = gymStartX + col * colSpacing;
-            const y = gymStartY + row * rowSpacing;
-            const gymNum = row * locationsPerRow + col + 1;
-            const location = new Location(scene, x, y, 'gym', `Спортзал ${gymNum}`, gymColors[row % gymColors.length]);
-            locations.push(location);
-        }
-    }
-    
-    // Район 6: Прачечные (4 ряда, рядом со спортзалами)
-    const laundryStartY = gymStartY;
-    const laundryStartX = gymStartX + locationsPerRow * colSpacing + 100;
-    const laundryColors = [0x90caf9, 0x64b5f6, 0x42a5f5, 0x2196f3];
-    for (let row = 0; row < 4; row++) {
-        for (let col = 0; col < locationsPerRow; col++) {
-            const x = laundryStartX + col * colSpacing;
-            const y = laundryStartY + row * rowSpacing;
-            const laundryNum = row * locationsPerRow + col + 1;
-            const location = new Location(scene, x, y, 'laundry', `Прачечная ${laundryNum}`, laundryColors[row % laundryColors.length]);
-            locations.push(location);
-        }
-    }
-    
-    // Больница (4 локации справа от спортзалов/прачечных)
-    const hospitalX = WORLD_WIDTH * 0.85;
-    const hospitalStartY = gymStartY + 100;
-    const hospitalColors = [0x98d8c8, 0x81c9c0, 0x6ab5b5, 0x539fa0];
-    for (let i = 0; i < 4; i++) {
-        const location = new Location(scene, hospitalX, hospitalStartY + i * 250, 'hospital', `Больница ${i + 1}`, hospitalColors[i]);
-        locations.push(location);
-    }
-    
-    // Самокат (4 локации слева от клубов/парков)
-    const scooterX = 300;
-    const scooterStartY = WORLD_HEIGHT * 0.75;
-    const scooterColors = [0xa5d6a7, 0x81c784, 0x66bb6a, 0x4caf50];
-    for (let i = 0; i < 4; i++) {
-        const location = new Location(scene, scooterX, scooterStartY + i * 200, 'scooter', `Самокат ${i + 1}`, scooterColors[i]);
-        locations.push(location);
-    }
-    
-    // Район 7: Клубы (4 ряда)
-    const clubStartY = WORLD_HEIGHT * 0.75;
-    const clubStartX = startX;
-    const clubColors = [0xba68c8, 0xab47bc, 0x9c27b0, 0x8e24aa];
-    for (let row = 0; row < 4; row++) {
-        for (let col = 0; col < locationsPerRow; col++) {
-            const x = clubStartX + col * colSpacing;
-            const y = clubStartY + row * rowSpacing;
-            const clubNum = row * locationsPerRow + col + 1;
-            const location = new Location(scene, x, y, 'club', `Клуб ${clubNum}`, clubColors[row % clubColors.length]);
-            locations.push(location);
-        }
-    }
-    
-    // Район 8: Парки (4 ряда, рядом с клубами)
-    const parkStartY = clubStartY;
-    const parkStartX = clubStartX + locationsPerRow * colSpacing + 100;
-    const parkColors = [0x6c5ce7, 0x5f3dc4, 0x4c32a8, 0x3f278f];
-    for (let row = 0; row < 4; row++) {
-        for (let col = 0; col < locationsPerRow; col++) {
-            const x = parkStartX + col * colSpacing;
-            const y = parkStartY + row * rowSpacing;
-            const parkNum = row * locationsPerRow + col + 1;
-            const location = new Location(scene, x, y, 'park', `Парк ${parkNum}`, parkColors[row % parkColors.length]);
-            locations.push(location);
-        }
-    }
-    
-    // Полиция (4 локации справа от клубов/парков)
-    const policeX = WORLD_WIDTH * 0.85;
-    const policeStartY = clubStartY + 100;
-    const policeColors = [0x78909c, 0x607d8b, 0x546e7a, 0x455a64];
-    for (let i = 0; i < 4; i++) {
-        const location = new Location(scene, policeX, policeStartY + i * 250, 'police', `Полиция ${i + 1}`, policeColors[i]);
-        locations.push(location);
-    }
+    // Все кафе и другие локации убраны - только дом в центре
 }
 
 function createPlayer(scene) {
-    // Позиция дома (самый левый верхний угол)
-    const houseX = 40;
-    const houseY = 40 + 80; // 80 - высота дома, чтобы дом был у самого края
+    // Позиция дома (центр экрана)
+    const houseX = WORLD_WIDTH / 2;
+    const houseY = WORLD_HEIGHT / 2;
     
     // Создание спрайта дома (без светлого основания)
     const houseSprite = scene.add.image(houseX, houseY, 'house');
