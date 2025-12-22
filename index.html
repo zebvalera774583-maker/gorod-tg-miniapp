@@ -64,7 +64,12 @@
         </div>
     </div>
 
-    <script src="game.js?v=2"></script>
+    <script>
+        // Принудительный обход кэша
+        const script = document.createElement('script');
+        script.src = 'game.js?v=' + new Date().getTime();
+        document.body.appendChild(script);
+    </script>
 </body>
 </html>
 

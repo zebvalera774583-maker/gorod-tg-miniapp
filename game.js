@@ -89,6 +89,9 @@ const config = {
 const WORLD_WIDTH = 4000;
 const WORLD_HEIGHT = 3000;
 
+// ВЕРСИЯ 2: Дом в центре, одна дорога, кафе убраны
+console.log("Game.js версия 2 загружена!");
+
 // Глобальные переменные игры
 let game;
 let playerSprite;
