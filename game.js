@@ -1,7 +1,26 @@
-// Инициализация Telegram WebApp
-const tg = window.Telegram.WebApp;
-tg.ready();
-tg.expand();
+// Инициализация Telegram WebApp (с проверкой)
+let tg;
+if (window.Telegram && window.Telegram.WebApp) {
+    tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
+} else {
+    console.warn("Telegram WebApp API недоступен. Запуск в обычном режиме.");
+    // Создаем заглушку для совместимости
+    tg = {
+        ready: (callback) => {
+            if (callback) {
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', callback);
+                } else {
+                    callback();
+                }
+            }
+        },
+        expand: () => {},
+        initDataUnsafe: {}
+    };
+}
 
 console.log("=== ИГРА ЗАГРУЖЕНА ===");
 
@@ -9,34 +28,36 @@ console.log("=== ИГРА ЗАГРУЖЕНА ===");
 const WORLD_WIDTH = 4000;
 const WORLD_HEIGHT = 3000;
 
-// Конфигурация Phaser
-const config = {
-    type: Phaser.AUTO,
-    width: window.innerWidth,
-    height: window.innerHeight,
-    parent: 'game-container',
-    backgroundColor: '#2d3748',
-    physics: {
-        default: 'arcade',
-        arcade: {
-            gravity: { y: 0 },
-            debug: false
-        }
-    },
-    scene: {
-        preload: preload,
-        create: create,
-        update: update
-    },
-    scale: {
-        mode: Phaser.Scale.RESIZE,
-        autoCenter: Phaser.Scale.CENTER_BOTH
-    }
-};
-
 let game;
 let playerSprite;
 let houseSprite;
+
+// Функция создания конфигурации Phaser
+function createConfig() {
+    return {
+        type: Phaser.AUTO,
+        width: window.innerWidth,
+        height: window.innerHeight,
+        parent: 'game-container',
+        backgroundColor: '#2d3748',
+        physics: {
+            default: 'arcade',
+            arcade: {
+                gravity: { y: 0 },
+                debug: false
+            }
+        },
+        scene: {
+            preload: preload,
+            create: create,
+            update: update
+        },
+        scale: {
+            mode: Phaser.Scale.RESIZE,
+            autoCenter: Phaser.Scale.CENTER_BOTH
+        }
+    };
+}
 
 // Загрузка ресурсов
 function preload() {
@@ -193,14 +214,90 @@ function update() {
     // Обновление каждый кадр (если нужно)
 }
 
-// Запуск игры
-tg.ready(() => {
-    game = new Phaser.Game(config);
+// Функция инициализации игры
+function initGame() {
+    console.log('=== initGame вызвана ===');
+    console.log('Phaser доступен:', typeof Phaser !== 'undefined');
+    console.log('Размер окна:', window.innerWidth, 'x', window.innerHeight);
+    console.log('game-container существует:', !!document.getElementById('game-container'));
     
-    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-        console.log('Пользователь:', tg.initDataUnsafe.user);
+    // Проверяем, что Phaser загружен
+    if (typeof Phaser === 'undefined') {
+        console.error('Phaser не загружен! Проверьте подключение скрипта.');
+        const container = document.getElementById('game-container');
+        if (container) {
+            container.innerHTML = 
+                '<div style="color: white; padding: 20px; text-align: center;">Ошибка: Phaser не загружен</div>';
+        }
+        return;
     }
-});
+    
+    // Проверяем контейнер
+    const container = document.getElementById('game-container');
+    if (!container) {
+        console.error('Контейнер game-container не найден!');
+        return;
+    }
+    
+    try {
+        console.log('Инициализация Phaser игры...');
+        const config = createConfig();
+        console.log('Конфигурация:', {
+            width: config.width,
+            height: config.height,
+            parent: config.parent
+        });
+        
+        game = new Phaser.Game(config);
+        console.log('Игра успешно создана!', game);
+        
+        if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            console.log('Пользователь:', tg.initDataUnsafe.user);
+        }
+    } catch (error) {
+        console.error('Ошибка при создании игры:', error);
+        console.error('Стек ошибки:', error.stack);
+        if (container) {
+            container.innerHTML = 
+                '<div style="color: white; padding: 20px; text-align: center;">Ошибка: ' + error.message + '</div>';
+        }
+    }
+}
+
+// Запуск игры после загрузки всех ресурсов
+function startGame() {
+    // Функция проверки и запуска
+    const tryInit = () => {
+        if (typeof Phaser !== 'undefined') {
+            console.log('Phaser загружен, запускаем игру...');
+            tg.ready(initGame);
+        } else {
+            console.log('Ожидание загрузки Phaser...');
+            setTimeout(tryInit, 100);
+        }
+    };
+    
+    // Проверяем готовность DOM
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', tryInit);
+    } else {
+        // DOM уже готов, сразу проверяем Phaser
+        tryInit();
+    }
+    
+    // Таймаут на случай, если Phaser не загрузится
+    setTimeout(() => {
+        if (typeof Phaser === 'undefined') {
+            console.error('Phaser не загрузился за 10 секунд');
+            document.getElementById('game-container').innerHTML = 
+                '<div style="color: white; padding: 20px; text-align: center; font-size: 18px;">' +
+                'Ошибка: Не удалось загрузить Phaser. Проверьте подключение к интернету.</div>';
+        }
+    }, 10000);
+}
+
+// Запускаем игру
+startGame();
 
 // Обработка изменения размера окна
 window.addEventListener('resize', () => {
